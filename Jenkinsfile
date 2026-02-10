@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+    nodejs 'node18'
+    }
+
+
     environment {
         AWS_REGION = 'ap-south-1'
         ECR_REPO = '864981730114.dkr.ecr.ap-south-1.amazonaws.com/leetcode-api'
