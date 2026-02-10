@@ -11,7 +11,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'
         ECR_REPO = '864981730114.dkr.ecr.ap-south-1.amazonaws.com/leetcode-api'
         ECS_CLUSTER = 'snsihub-cluster-dev'
-        ECS_SERVICE = 'leetcode-api-dev'
+        ECS_SERVICE = 'leetcode-api-dev-service'
         TASK_FAMILY = 'leetcode-api-dev'  // Task Definition Name
         CONTAINER_NAME = 'leetcode-api-dev'   // Name of the container inside ECS task definition
         PORT = '3000'  // Application port
