@@ -18,6 +18,67 @@ import {
 const app = express();
 const API_URL = process.env.LEETCODE_API_URL || 'https://leetcode.com/graphql';
 
+const normalizeCookieValue = (value = '', cookieName = '') => {
+  const trimmed = String(value || '').trim().replace(/^["']|["']$/g, '');
+  if (!cookieName) return trimmed;
+
+  const prefix = `${cookieName}=`;
+  return trimmed.toLowerCase().startsWith(prefix.toLowerCase())
+    ? trimmed.slice(prefix.length).trim()
+    : trimmed;
+};
+
+const getLeetCodeAuth = () => {
+  const session = normalizeCookieValue(
+    process.env.LEETCODE_SESSION || '',
+    'LEETCODE_SESSION'
+  );
+  const csrf = normalizeCookieValue(
+    process.env.LEETCODE_CSRF_TOKEN || process.env.csrftoken || process.env.CSRFTOKEN || '',
+    'csrftoken'
+  );
+
+  return { session, csrf };
+};
+
+const getSessionUsername = (session: string) => {
+  try {
+    const payload = JSON.parse(
+      Buffer.from(session.split('.')[1] || '', 'base64url').toString('utf8')
+    );
+    return payload?.username || payload?.user_slug || null;
+  } catch {
+    return null;
+  }
+};
+
+const buildLeetCodeHeaders = (referer: string) => {
+  const { session, csrf } = getLeetCodeAuth();
+  const cookieParts = [
+    session ? `LEETCODE_SESSION=${session}` : null,
+    csrf ? `csrftoken=${csrf}` : null,
+  ].filter(Boolean);
+
+  return {
+    Referer: referer,
+    Origin: 'https://leetcode.com',
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+    ...(cookieParts.length ? { Cookie: cookieParts.join('; ') } : {}),
+    ...(csrf ? { 'X-CSRFToken': csrf, 'x-csrftoken': csrf } : {}),
+  };
+};
+
+app.get('/auth/status', (_req, res) => {
+  const { session, csrf } = getLeetCodeAuth();
+
+  return res.json({
+    hasLeetcodeSession: Boolean(session),
+    hasCsrfToken: Boolean(csrf),
+    sessionUsername: session ? getSessionUsername(session) : null,
+  });
+});
+
 app.use(cors()); //enable all CORS request
 app.use(express.json());
 app.use((req: express.Request, _res: Response, next: NextFunction) => {
@@ -288,8 +349,7 @@ app.get('/:username/submissionHistory', async (req, res) => {
   const { username } = req.params;
   const start = req.query.start ? new Date(String(req.query.start)) : null;
   const end = req.query.end ? new Date(String(req.query.end)) : null;
-  const session = process.env.LEETCODE_SESSION;
-  const csrf = process.env.LEETCODE_CSRF_TOKEN;
+  const { session } = getLeetCodeAuth();
 
   if (!start || !end || Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
     return res.status(400).json({ error: 'Valid start and end query parameters are required' });
@@ -318,14 +378,7 @@ app.get('/:username/submissionHistory', async (req, res) => {
       const response = await fetch(
         `https://leetcode.com/api/submissions/${encodeURIComponent(username)}/?offset=${offset}&limit=${limit}`,
         {
-          headers: {
-            Referer: `https://leetcode.com/u/${username}/`,
-            Cookie: [
-              `LEETCODE_SESSION=${session}`,
-              csrf ? `csrftoken=${csrf}` : null,
-            ].filter(Boolean).join('; '),
-            ...(csrf ? { 'X-CSRFToken': csrf } : {}),
-          },
+          headers: buildLeetCodeHeaders(`https://leetcode.com/u/${username}/`),
         }
       );
 
@@ -411,8 +464,6 @@ app.post('/submissionLinks/verify', async (req, res) => {
       .filter(Boolean)
       .map((slug: string) => String(slug))
   );
-  const session = process.env.LEETCODE_SESSION;
-  const csrf = process.env.LEETCODE_CSRF_TOKEN;
 
   if (!normalizedUsername) {
     return res.status(400).json({ error: 'username is required' });
@@ -426,18 +477,7 @@ app.post('/submissionLinks/verify', async (req, res) => {
     return res.status(400).json({ error: 'At least one submission link is required' });
   }
 
-  const headers = {
-    Referer: `https://leetcode.com/u/${normalizedUsername}/`,
-    ...(session
-      ? {
-          Cookie: [
-            `LEETCODE_SESSION=${session}`,
-            csrf ? `csrftoken=${csrf}` : null,
-          ].filter(Boolean).join('; '),
-        }
-      : {}),
-    ...(csrf ? { 'X-CSRFToken': csrf } : {}),
-  };
+  const headers = buildLeetCodeHeaders(`https://leetcode.com/u/${normalizedUsername}/`);
 
   const valid = [];
   const invalid = [];
@@ -471,10 +511,13 @@ app.post('/submissionLinks/verify', async (req, res) => {
       const detail = response.data?.data?.submissionDetails;
 
       if (!detail) {
+        const activeSessionUsername = getSessionUsername(getLeetCodeAuth().session);
         invalid.push({
           link,
           submissionId,
-          reason: 'Submission details are not accessible from this LeetCode session',
+          reason: activeSessionUsername
+            ? `Submission details are not accessible from the active LeetCode session (${activeSessionUsername}). Restart the API after env changes or use a session that can open this submission.`
+            : 'Submission details are not accessible because LeetCode session env is not loaded. Add .env in the leetcode-api root and restart the API.',
         });
         continue;
       }
