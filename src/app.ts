@@ -18,6 +18,41 @@ import {
 const app = express();
 const API_URL = process.env.LEETCODE_API_URL || 'https://leetcode.com/graphql';
 
+const allowedOrigins = new Set([
+  'https://app.okrion.ai',
+  'https://www.app.okrion.ai',
+  'https://glzql09s-3000.inc1.devtunnels.ms',
+  'http://localhost:2406',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  ...(process.env.CORS_ALLOWED_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/$/, ''))
+    .filter(Boolean),
+]);
+
+const corsOptions: cors.CorsOptions = {
+  origin(origin, callback) {
+    if (
+      !origin ||
+      allowedOrigins.has(origin) ||
+      /^https:\/\/[a-z0-9-]+-\d+\.inc1\.devtunnels\.ms$/i.test(origin)
+    ) {
+      callback(null, true);
+      return;
+    }
+
+    callback(null, false);
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+app.use(express.json());
+
 const normalizeCookieValue = (value = '', cookieName = '') => {
   const trimmed = String(value || '').trim().replace(/^["']|["']$/g, '');
   if (!cookieName) return trimmed;
@@ -79,8 +114,6 @@ app.get('/auth/status', (_req, res) => {
   });
 });
 
-app.use(cors()); //enable all CORS request
-app.use(express.json());
 app.use((req: express.Request, _res: Response, next: NextFunction) => {
   console.log('Requested URL:', req.originalUrl);
   next();
