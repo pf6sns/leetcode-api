@@ -66,7 +66,7 @@ query selectProblem($titleSlug: String!) {
 }`
 
 // queries.ts
-export const dailyQeustion = `
+export const dailyQuestion = `
 query getDailyProblem {
   activeDailyCodingChallengeQuestion {
       date

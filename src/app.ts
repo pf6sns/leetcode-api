@@ -12,7 +12,7 @@ import {
   getUserProfileQuery,
   userProfileCalendarQuery,
   officialSolutionQuery,
-  dailyQeustion,
+  dailyQuestion,
 } from './GQLQueries/newQueries';
 
 const app = express();
@@ -21,7 +21,7 @@ const API_URL = process.env.LEETCODE_API_URL || 'https://leetcode.com/graphql';
 const allowedOrigins = new Set([
   'https://app.okrion.ai',
   'https://www.app.okrion.ai',
-  'https://glzql09s-3000.inc1.devtunnels.ms',
+  'https://hzbnbpzm-3000.inc1.devtunnels.ms',
   'http://localhost:2406',
   'http://localhost:5173',
   'http://localhost:3000',
@@ -281,7 +281,7 @@ const handleRequest = async (res: Response, query: string, params: any) => {
   }
 };
 app.get('/dailyQuestion', (_, res) => {
-  handleRequest(res, dailyQeustion, {});
+  handleRequest(res, dailyQuestion, {});
 });
 
 app.get('/skillStats/:username', (req, res) => {
