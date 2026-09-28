@@ -17,6 +17,8 @@ import {
 
 const app = express();
 const API_URL = process.env.LEETCODE_API_URL || 'https://leetcode.com/graphql';
+const LEETCODE_TOKEN_SUPPORT_MESSAGE =
+  'LeetCode token issue. Please contact the OKR support team.';
 
 const allowedOrigins = new Set([
   'https://app.okrion.ai',
@@ -545,12 +547,16 @@ app.post('/submissionLinks/verify', async (req, res) => {
 
       if (!detail) {
         const activeSessionUsername = getSessionUsername(getLeetCodeAuth().session);
+        console.warn(
+          activeSessionUsername
+            ? `Submission details are not accessible from the active LeetCode session (${activeSessionUsername}). Restart the API after env changes or use a session that can open this submission.`
+            : 'Submission details are not accessible because LeetCode session env is not loaded. Add .env in the leetcode-api root and restart the API.',
+          { submissionId, username: normalizedUsername, link }
+        );
         invalid.push({
           link,
           submissionId,
-          reason: activeSessionUsername
-            ? `Submission details are not accessible from the active LeetCode session (${activeSessionUsername}). Restart the API after env changes or use a session that can open this submission.`
-            : 'Submission details are not accessible because LeetCode session env is not loaded. Add .env in the leetcode-api root and restart the API.',
+          reason: LEETCODE_TOKEN_SUPPORT_MESSAGE,
         });
         continue;
       }
