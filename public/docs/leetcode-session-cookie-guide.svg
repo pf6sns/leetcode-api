@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520" role="img" aria-labelledby="title desc">
+  <title id="title">Find your LeetCode session cookie safely</title>
+  <desc id="desc">Sanitized browser DevTools mock showing Application, Cookies, the selected LeetCode session row, a redacted cookie value, and local environment variable names.</desc>
+  <rect width="1120" height="520" fill="#f1f5f9"/>
+  <rect x="24" y="24" width="1072" height="472" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="24" y="24" width="1072" height="58" rx="10" fill="#14212b"/>
+  <path d="M24 72h1072v10H24z" fill="#14212b"/>
+  <circle cx="52" cy="53" r="7" fill="#fb7185"/><circle cx="76" cy="53" r="7" fill="#fbbf24"/><circle cx="100" cy="53" r="7" fill="#34d399"/>
+  <text x="142" y="59" fill="#e2e8f0" font-family="Arial,sans-serif" font-size="18" font-weight="700">Browser DevTools</text>
+  <rect x="24" y="82" width="235" height="414" fill="#f8fafc"/>
+  <text x="48" y="119" fill="#334155" font-family="Arial,sans-serif" font-size="15" font-weight="700">Storage</text>
+  <text x="64" y="157" fill="#475569" font-family="Arial,sans-serif" font-size="14">Local storage</text>
+  <text x="64" y="190" fill="#475569" font-family="Arial,sans-serif" font-size="14">Session storage</text>
+  <rect x="37" y="207" width="210" height="38" rx="5" fill="#e0f2fe"/>
+  <text x="64" y="232" fill="#075985" font-family="Arial,sans-serif" font-size="14" font-weight="700">Cookies</text>
+  <text x="78" y="271" fill="#475569" font-family="Arial,sans-serif" font-size="13">https://leetcode.com</text>
+  <text x="289" y="119" fill="#0f172a" font-family="Arial,sans-serif" font-size="17" font-weight="700">Application - Cookies - https://leetcode.com</text>
+  <text x="289" y="151" fill="#64748b" font-family="Arial,sans-serif" font-size="13">Select the cookie row; copy only its Value.</text>
+  <rect x="281" y="169" width="786" height="39" fill="#e2e8f0"/>
+  <text x="300" y="194" fill="#334155" font-family="Arial,sans-serif" font-size="13" font-weight="700">Name</text>
+  <text x="486" y="194" fill="#334155" font-family="Arial,sans-serif" font-size="13" font-weight="700">Value</text>
+  <text x="856" y="194" fill="#334155" font-family="Arial,sans-serif" font-size="13" font-weight="700">Domain</text>
+  <rect x="281" y="209" width="786" height="39" fill="#ffffff"/>
+  <text x="300" y="234" fill="#334155" font-family="Arial,sans-serif" font-size="13">csrftoken</text>
+  <text x="486" y="234" fill="#64748b" font-family="Arial,sans-serif" font-size="13">[redacted]</text>
+  <text x="856" y="234" fill="#64748b" font-family="Arial,sans-serif" font-size="13">leetcode.com</text>
+  <rect x="281" y="249" width="786" height="43" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+  <text x="300" y="276" fill="#831843" font-family="Arial,sans-serif" font-size="13" font-weight="700">LEETCODE_SESSION</text>
+  <text x="486" y="276" fill="#831843" font-family="Arial,sans-serif" font-size="13" font-weight="700">[redacted - do not share]</text>
+  <text x="856" y="276" fill="#64748b" font-family="Arial,sans-serif" font-size="13">leetcode.com</text>
+  <path d="M676 302v26h-26" fill="none" stroke="#db2777" stroke-width="2"/>
+  <rect x="281" y="337" width="786" height="131" rx="7" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="301" y="366" fill="#0f172a" font-family="Arial,sans-serif" font-size="14" font-weight="700">In the API project's local .env (never commit this file)</text>
+  <text x="301" y="399" fill="#0f766e" font-family="Consolas,monospace" font-size="14">LEETCODE_SESSION=your_cookie_value</text>
+  <text x="301" y="428" fill="#0f766e" font-family="Consolas,monospace" font-size="14">LEETCODE_CSRF_TOKEN=your_csrftoken_value</text>
+  <text x="301" y="453" fill="#b91c1c" font-family="Arial,sans-serif" font-size="12" font-weight="700">Never paste real cookie values into docs, frontend code, screenshots, or source control.</text>
+</svg>

@@ -25,6 +25,48 @@ At First, I struggled to find proper documentation for the `leetcode.com/graphql
 https://alfa-leetcode-api.onrender.com/
 ```
 
+## Configure LeetCode Session Cookies (Local Development)
+
+Some authenticated LeetCode endpoints need cookies from a LeetCode account that is allowed to view the submission. Keep these values on the API server only. Never put them in frontend code, commit them, or share them in screenshots, chat, logs, or issue reports.
+
+![Sanitized guide showing where to find the LeetCode session cookie in DevTools](./public/docs/leetcode-session-cookie-guide.svg)
+
+1. Sign in to [leetcode.com](https://leetcode.com) in your browser using the account that can access the target submission.
+2. Open DevTools (`F12` or `Ctrl+Shift+I`) and select **Application** (Chrome/Edge) or **Storage** (Firefox).
+3. Open **Cookies** and select `https://leetcode.com`.
+4. Find `LEETCODE_SESSION`, select it, and copy only its **Value**. Do not copy the cookie name, domain, or the complete cookie row.
+5. If the endpoint requires it, find `csrftoken` in the same cookie list and copy only its **Value**.
+6. In the `leetcode-api` project root, create your ignored local env file and set the values:
+
+   ```bash
+   # macOS / Linux
+   cp .env.example .env
+   ```
+
+   ```powershell
+   # Windows PowerShell
+   Copy-Item .env.example .env
+   ```
+
+   Edit `.env` and replace the empty values. Keep each value on one line:
+
+   ```dotenv
+   LEETCODE_SESSION=paste_the_LEETCODE_SESSION_value_here
+   LEETCODE_CSRF_TOKEN=paste_the_csrftoken_value_here
+   ```
+
+7. Restart the API after changing `.env`:
+
+   ```bash
+   npm run dev
+   ```
+
+8. Check `http://localhost:3000/auth/status`. It reports whether the session and CSRF values were loaded and may show the session username; it never returns the cookie values. Then retry the authenticated API operation.
+
+The CSRF value is optional unless the request requires it. `/auth/status` confirms that environment values were loaded, but does not guarantee LeetCode still accepts the session. If the request remains unauthorized, sign in again, replace the expired cookie values, restart the API, and retry. In production, configure these as server-side secrets in the deployment platform rather than committing or placing them in a browser app.
+
+**Security:** The screenshots used as the reference expose active LeetCode cookies. Treat those values as compromised: sign out/revoke that browser session (or change the account password if session revocation is unavailable), then capture fresh values. Never add the original screenshots to this repository.
+
 ## Run with docker 🐳
 
 ```
